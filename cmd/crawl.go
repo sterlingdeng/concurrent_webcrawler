@@ -3,19 +3,21 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"runtime"
+	"os"
 	"time"
 	"webcrawler/internal/crawler"
 )
 
 const (
-	DefaultDomain = "http://localhost:8080"
+	DefaultDomain      = "http://localhost:8080"
 	DefaultWorkerCount = 10
+	DefaultLogLevel    = "info"
 )
 
 var (
-	DomainUrl string
+	DomainUrl   string
 	WorkerCount int
+	LogLevel    string
 )
 
 var crawlCmd = &cobra.Command{
@@ -30,28 +32,19 @@ var crawlCmd = &cobra.Command{
 func init() {
 	crawlCmd.Flags().StringVarP(&DomainUrl, "domain", "d", DefaultDomain, "Domain for webcrawler to crawl")
 	crawlCmd.Flags().IntVarP(&WorkerCount, "workers", "w", DefaultWorkerCount, "Sets the number of concurrent workers")
+	crawlCmd.Flags().StringVarP(&LogLevel, "log", "l", DefaultLogLevel, "Sets the logging level")
 	rootCmd.AddCommand(crawlCmd)
 }
 
 func Crawl() {
-
-	go func() {
-		tickCh := time.Tick(time.Second)
-		for {
-			<-tickCh
-			fmt.Println(runtime.NumGoroutine())
-		}
-	}()
-
 	t1 := time.Now()
-	c := crawler.NewCrawler(DomainUrl, WorkerCount)
-	c.Crawl()
-	graph := c.GetRelationships()
-	for url, page := range graph {
-		fmt.Printf("URL: %s Page Data: %+v \n", url, page)
-	}
-	t2 := time.Now()
-	fmt.Println("time:", t2.Sub(t1))
-	for true {}
+	defer func() {fmt.Println("Time:", time.Now().Sub(t1))}()
 
+	c := crawler.NewCrawler(DomainUrl, WorkerCount, LogLevel)
+	err := c.Crawl()
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		os.Exit(1)
+	}
+	fmt.Println("Sitemap:", c.GetRelationships())
 }

@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"fmt"
 	"golang.org/x/net/html"
 	"io"
 	"net/url"
@@ -22,7 +21,6 @@ func getLinks(n *html.Node, domain string) []string {
 			if attr.Key == "href" {
 				same, err := isSameDomain(attr.Val, domain)
 				if err != nil {
-					fmt.Println(err)
 					continue
 				}
 				if same {

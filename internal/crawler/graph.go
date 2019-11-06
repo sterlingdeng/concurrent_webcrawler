@@ -34,11 +34,3 @@ func (s *SiteGraph) VisitedPage(url string) bool {
 	}
 	return false
 }
-
-//func (s *SiteGraph) addPageData(pages ...Page) {
-//	for _, p := range pages {
-//		if _, exist := s.PageData[p.Url]; !exist {
-//			s.PageData[p.Url] = p
-//		}
-//	}
-//}
