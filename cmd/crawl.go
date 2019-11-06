@@ -25,7 +25,8 @@ var crawlCmd = &cobra.Command{
 	Short: "Crawls a given website and returns the sitemap",
 	Long:  "Crawls a given website, if none is provided, it will crawl monzo.com",
 	Run: func(cmd *cobra.Command, args []string) {
-		Crawl()
+		sitemap := Crawl()
+		fmt.Println(sitemap)
 	},
 }
 
@@ -36,7 +37,7 @@ func init() {
 	rootCmd.AddCommand(crawlCmd)
 }
 
-func Crawl() {
+func Crawl() map[string]crawler.Page {
 	t1 := time.Now()
 	defer func() {fmt.Println("Time:", time.Now().Sub(t1))}()
 
@@ -46,5 +47,5 @@ func Crawl() {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	fmt.Println("Sitemap:", c.GetRelationships())
+	return c.GetRelationships()
 }
