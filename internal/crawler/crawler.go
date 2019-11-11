@@ -3,7 +3,6 @@ package crawler
 import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"io"
 	"net/http"
 	"sync"
 	"webcrawler/internal"
@@ -82,14 +81,8 @@ func (c *Crawler) setupWorkerPool(wwg *sync.WaitGroup, sendWork chan<- string, g
 				resultCh <- workResult{url, err}
 				continue
 			}
-			body, ok := resp.Body.(io.Reader)
-			if !ok {
-				err = errors.New("resp.Body type assertion to io.Reader failed")
-				resultCh <- workResult{url, err}
-				continue
-			}
 
-			title, links, err := ParseLinks(body, c.domain)
+			title, links, err := ParseLinks(resp.Body, c.domain)
 			resp.Body.Close()
 			if err != nil {
 				err = errors.Wrap(err, "ParseLinks")
