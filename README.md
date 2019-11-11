@@ -1,6 +1,5 @@
 # Concurrent Webcrawler
 
-
 ## Running the Program
 
 build using `make build`
